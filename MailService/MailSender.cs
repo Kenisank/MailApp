@@ -17,17 +17,18 @@ namespace MailService
 
         public void SendMail(Message message)
         {
-            throw new NotImplementedException();
+            var mailMsg = CreateMailMessage(message);
+            Send(mailMsg);
         }
 
 
-        private MimeMessage CreateMailMessage(Message message)  
+        private MimeMessage CreateMailMessage(Message message)
         {
             var mailMessage = new MimeMessage();
             mailMessage.From.Add(new MailboxAddress(_config.From));
             mailMessage.To.AddRange(mailMessage.To);
-            mailMessage.Subject=message.Subject;
-            mailMessage.Body=new TextPart(MimeKit.Text.TextFormat.Text) { Text=message.Content};
+            mailMessage.Subject = message.Subject;
+            mailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = message.Content };
 
 
 
@@ -39,7 +40,7 @@ namespace MailService
         private void Send(MimeMessage mailMessage)
         {
 
-            using(var client =new SmtpClient)
+            using (var client = new SmtpClient())
             {
                 try
                 {
@@ -49,7 +50,7 @@ namespace MailService
 
                     client.Send(mailMessage);
                 }
-                catch (Exception)
+                catch
                 {
 
                     throw;

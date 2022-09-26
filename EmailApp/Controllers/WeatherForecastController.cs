@@ -30,6 +30,7 @@ namespace EmailApp.Controllers
             var rng = new Random();
 
             var message = new Message(new string[] { "kenisank1@gmail.com" }, "Test email", "Welcome to WilberForce Company Ltd.");
+            _mailSender.SendMail(message);
 
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
