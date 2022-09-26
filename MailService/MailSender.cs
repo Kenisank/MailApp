@@ -26,7 +26,7 @@ namespace MailService
         {
             var mailMessage = new MimeMessage();
             mailMessage.From.Add(new MailboxAddress(_config.From));
-            mailMessage.To.AddRange(mailMessage.To);
+            mailMessage.To.AddRange(message.To);
             mailMessage.Subject = message.Subject;
             mailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = message.Content };
 
@@ -46,6 +46,8 @@ namespace MailService
                 {
                     client.Connect(_config.SmtpServer, _config.Port, true);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
+                    client.AuthenticationMechanisms.Remove("XOAUTH");
+                    client.AuthenticationMechanisms.Remove("OAUTHBEARER");                 
                     client.Authenticate(_config.UserName, _config.Password);
 
                     client.Send(mailMessage);
