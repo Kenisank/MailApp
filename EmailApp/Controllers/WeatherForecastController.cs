@@ -1,4 +1,5 @@
 ﻿using MailService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -25,12 +26,31 @@ namespace EmailApp.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<IEnumerable<WeatherForecast>> Get()
         {
             var rng = new Random();
 
-            var message = new Message(new string[] { "wilberforce@leptonsmulticoncept.com.ng", "chideraduru51@gmail.com", "kenisank1@gmail.com" }, "Test email", "Welcome to WilberForce Company Ltd.");
-            _mailSender.SendMail(message);
+            var message = new Message(new string[] { "wilberforce@leptonsmulticoncept.com.ng", "chideraduru51@gmail.com", "kenisank1@gmail.com" }, "Test email async ", "Welcome to WilberForce Company Ltd.", null);
+            await _mailSender.SendMailAsync(message);
+
+            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            {
+                Date = DateTime.Now.AddDays(index),
+                TemperatureC = rng.Next(-20, 55),
+                Summary = Summaries[rng.Next(Summaries.Length)]
+            })
+            .ToArray();
+        }
+
+        [HttpPost]
+        public async Task<IEnumerable<WeatherForecast>> Post()
+        {
+            var rng = new Random();
+
+            var files = Request.Form.Files.Any() ? Request.Form.Files : new FormFileCollection();
+
+            var message = new Message(new string[] { "wilberforce@leptonsmulticoncept.com.ng", "chideraduru51@gmail.com", "kenisank1@gmail.com" }, "Test email with attachements ", "Welcome to WilberForce Company Ltd with attachements.", files);
+            await _mailSender.SendMailAsync(message);
 
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {

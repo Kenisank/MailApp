@@ -2,13 +2,17 @@
 using MimeKit;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MailService
 {
     public class MailSender : IMailSender
     {
         private readonly MailConfig _config;
+        private Microsoft.AspNetCore.Http.IFormFile attachment;
 
         public MailSender(MailConfig config)
         {
@@ -28,14 +32,37 @@ namespace MailService
             mailMessage.From.Add(new MailboxAddress(_config.From));
             mailMessage.To.AddRange(message.To);
             mailMessage.Subject = message.Subject;
-            mailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = message.Content };
 
+            var bodyBuilder = new BodyBuilder { HtmlBody = String.Format("<h2 style='color:green'>{0}</h2>", message.Content) };
 
+            if (message.Attachements != null && message.Attachements.Any())
+            {
+                byte[] fileBytes;
+                foreach(var attachement in message.Attachements)
+                {
+                   using(var ms= new MemoryStream())
+                    {
+                        attachment = CopyTo(ms);
+                        fileBytes= ms.ToArray();
+                    }
+                    bodyBuilder.Attachments.Add(attachement.FileName, fileBytes, ContentType.Parse(attachement.ContentType));
+                }
+            }
 
+            mailMessage.Body = bodyBuilder.ToMessageBody();
             return mailMessage;
         }
 
+        private Microsoft.AspNetCore.Http.IFormFile CopyTo(MemoryStream ms)
+        {
+            throw new NotImplementedException();
+        }
 
+        public async  Task SendMailAsync(Message message)
+        {
+            var mailMessage = CreateMailMessage(message);
+            await SendAsync(mailMessage);
+        }
 
         private void Send(MimeMessage mailMessage)
         {
@@ -63,6 +90,33 @@ namespace MailService
                     client.Dispose();
                 }
             }
+
+        } private async Task SendAsync(MimeMessage mailmessage)
+        {
+            using (var client = new SmtpClient())
+            {
+                try
+                {
+                   await client.ConnectAsync(_config.SmtpServer, _config.Port, true);
+                    client.AuthenticationMechanisms.Remove("XOAUTH2");
+                    client.AuthenticationMechanisms.Remove("XOAUTH");
+                    client.AuthenticationMechanisms.Remove("OAUTHBEARER");
+                   await client.AuthenticateAsync(_config.UserName, _config.Password);
+
+                    await  client.SendAsync(mailmessage);
+                }
+                catch
+                {
+
+                    throw;
+                }
+                finally
+                {
+                    await client.DisconnectAsync(true);
+                    client.Dispose();
+                }
+            }
+
 
         }
     }
