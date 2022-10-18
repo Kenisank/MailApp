@@ -41,6 +41,8 @@ namespace EmailApp
             });
 
             services.AddControllers();
+
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,6 +63,18 @@ namespace EmailApp
             {
                 endpoints.MapControllers();
             });
+
+
+            // This middleware serves generated Swagger document as a JSON endpoint
+            app.UseSwagger();
+
+            // This middleware serves the Swagger documentation UI
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ECOVEST NOTIFICATION API V1");
+            });
+
+            // Rest of the code
         }
     }
 }
