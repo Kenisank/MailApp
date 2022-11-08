@@ -15,7 +15,9 @@ namespace MailService
 
         public MessageDto()
         {
-            To=new List<string>();
+            var bodyBuilder = new BodyBuilder { HtmlBody = String.Format("<h2 style='color:green'>{0}</h2>", Content) };
+
+            To = new List<string>();
 
         }
     }

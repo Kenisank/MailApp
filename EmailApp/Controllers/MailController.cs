@@ -1,6 +1,7 @@
 ﻿using MailService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MailApp.Controllers
@@ -18,12 +19,30 @@ namespace MailApp.Controllers
 
         [HttpPost]
         [Route("new_notification")]
-        public async Task<string> Post(MessageDto msg)
-        {
+        public async Task<string> Post([FromForm] MessageDto msg)
+        { var c = "\"";
           
+            var v2 = msg.Content.Replace(c, "");
+            var file = Request.Form.Files.Any() ? Request.Form.Files : new FormFileCollection();
 
-            var message = new Message(msg.To, msg.Subject, msg.Content, null);
+            var message = new Message(msg.To, msg.Subject, v2, null);
             await _mailSender.SendMailAsync(message);
+
+            return "Sent";
+
+
+        }
+
+
+
+        [HttpPost]
+        [Route("new_notificationn")]
+        public async Task<string> Postt()
+        {
+
+
+            //  var message = new Message(msg.To, msg.Subject, msg.Content, null);
+            //await _mailSender.SendMailAsync(message);
 
             return "Sent";
 
