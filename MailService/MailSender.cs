@@ -29,11 +29,11 @@ namespace MailService
         private MimeMessage CreateMailMessage(Message message)
         {
             var mailMessage = new MimeMessage();
-            mailMessage.From.Add(new MailboxAddress(_config.From));
+           mailMessage.From.Add(new MailboxAddress(_config.From));
             mailMessage.To.AddRange(message.To);
             mailMessage.Subject = message.Subject;
 
-            var bodyBuilder = new BodyBuilder { HtmlBody = String.Format("<h2 style='color:green'>{0}</h2>", message.Content) };
+            var bodyBuilder = new BodyBuilder { HtmlBody = String.Format(message.Content) };
 
             if (message.Attachements != null && message.Attachements.Any())
             {

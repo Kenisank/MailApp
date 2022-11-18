@@ -20,9 +20,15 @@ namespace MailApp.Controllers
         [HttpPost]
         [Route("new_notification")]
         public async Task<string> Post([FromForm] MessageDto msg)
-        { var c = "\"";
-          
+        {
+            var a = "\r";
+            var b = "\n";
+            var c = "\"";
+
+           
             var v2 = msg.Content.Replace(c, "");
+            v2 = v2.Replace(a, "");
+            v2 = v2.Replace(b, "");
             var file = Request.Form.Files.Any() ? Request.Form.Files : new FormFileCollection();
 
             var message = new Message(msg.To, msg.Subject, v2, null);
