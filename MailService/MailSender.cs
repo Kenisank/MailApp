@@ -30,10 +30,10 @@ namespace MailService
         {
             var mailMessage = new MimeMessage();
            mailMessage.From.Add(new MailboxAddress(_config.From));
-            mailMessage.To.AddRange(message.To);
+            mailMessage.To.Add(message.To);
             mailMessage.Subject = message.Subject;
 
-            var bodyBuilder = new BodyBuilder { HtmlBody = String.Format(message.Content) };
+            var bodyBuilder = new BodyBuilder { HtmlBody = String.Format("<div>{0}</div>", message.Content) };
 
             if (message.Attachements != null && message.Attachements.Any())
             {

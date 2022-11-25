@@ -8,16 +8,18 @@ namespace MailService
 {
     public class MessageDto
     {
-        public IEnumerable<string> To { get; set; }
+        public PersonDetailsDto To { get; set; }
+
         public string Subject { get; set; }
+
         public string Content { get; set; }
        
 
         public MessageDto()
         {
-            var bodyBuilder = new BodyBuilder { HtmlBody = String.Format("<h2 style='color:green'>{0}</h2>", Content) };
+            var bodyBuilder = new BodyBuilder { HtmlBody = String.Format("<div>{0}</div>", Content) };
 
-            To = new List<string>();
+            To = new PersonDetailsDto();
 
         }
     }

@@ -21,18 +21,29 @@ namespace MailApp.Controllers
         [Route("new_notification")]
         public async Task<string> Post([FromForm] MessageDto msg)
         {
-            var a = "\r";
-            var b = "\n";
-            var c = "\"";
+            
+            for(int i=0; i<msg.To.To.Count; i++)
+            {
 
-           
-            var v2 = msg.Content.Replace(c, "");
-            v2 = v2.Replace(a, "");
-            v2 = v2.Replace(b, "");
-            var file = Request.Form.Files.Any() ? Request.Form.Files : new FormFileCollection();
+                
+                var a = "\r";
+                var b = "\n";
+                var c = "\"";
 
-            var message = new Message(msg.To, msg.Subject, v2, null);
-            await _mailSender.SendMailAsync(message);
+
+                var v2 = msg.Content.Replace(c, "");
+                v2 = v2.Replace(a, "");
+                v2 = v2.Replace(b, "");
+                v2 = v2.Replace("Adams", msg.To.Name[i].Trim().ToUpperInvariant());
+                var file = Request.Form.Files.Any() ? Request.Form.Files : new FormFileCollection();
+
+                var message = new Message(msg.To.To[i], msg.Subject, v2, null);
+                await _mailSender.SendMailAsync(message);
+
+               
+            }
+
+
 
             return "Sent";
 
